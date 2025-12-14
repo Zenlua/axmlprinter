@@ -6,6 +6,12 @@ plugins {
 
 version = '1.0.1'
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
 repositories {
     mavenCentral()
 }
@@ -17,40 +23,17 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:5.18.0'
 }
 
-allprojects {
-    tasks.withType(JavaCompile) {
-        options.compilerArgs << "-Xlint:unchecked"
-    }
-}
-
-jacocoTestReport {
-    reports {
-        html.required.set(true)
-        xml.required.set(true)
-        csv.required.set(false)
-    }
+tasks.withType(JavaCompile).configureEach {
+    options.release.set(17)          // CỰC KỲ QUAN TRỌNG
+    options.compilerArgs << "-Xlint:unchecked"
 }
 
 tasks.jar {
     manifest {
         attributes 'Main-Class': 'diff.rednaga.AXMLPrinter'
     }
-
-    processResources {
-        inputs.property('version', version)
-        expand('version': version)
-    }
 }
 
 test {
     useJUnitPlatform()
-    jvmArgs(
-        '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
-        '--add-opens', 'java.base/java.io=ALL-UNNAMED',
-        '--add-opens', 'java.base/java.util=ALL-UNNAMED'
-    )
-
-    testLogging {
-        events "passed", "skipped", "failed"
-    }
 }
